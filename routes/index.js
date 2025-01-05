@@ -37,12 +37,16 @@ module.exports = function (pool) {
     });
   });
   
-  router.get('/logout', function(req, res){
+  router.get('/logout', function(req, res) {
     req.session.destroy(function(err) {
-      console.log('TERIMA KASIH!');
+      const response = {
+        status: "success",
+        message: "TERIMA KASIH! Anda telah berhasil logout."
+      };
+      console.log(JSON.stringify(response, null, 2));
       // res.redirect('/');
-    })
+    });
   });
-
+  
   return router;
 };
