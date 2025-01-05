@@ -4,8 +4,25 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const{ Pool, Client } = require('pg');
+
+const pool = new Pool({
+  user : 'yudhistira',
+  database : 'jakita',
+  password : 'yudhis0221',
+  host : 'localhost',
+  port : 5432
+});
+
+pool.connect().then(() =>{
+  console.log("Successfully connected to the database");
+}).catch(err => {
+  console.log('Could not connect to the database. Exiting now...');
+  process.exit();
+});
+
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/users')(pool);
 
 var app = express();
 
