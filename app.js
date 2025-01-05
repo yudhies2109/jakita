@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const{ Pool, Client } = require('pg');
 
@@ -21,7 +23,7 @@ pool.connect().then(() =>{
   process.exit();
 });
 
-var indexRouter = require('./routes/index');
+var indexRouter = require('./routes/index')(pool);
 var usersRouter = require('./routes/users')(pool);
 
 var app = express();
@@ -36,7 +38,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+// Middleware session
+app.use(session({
+  secret: '12345678',  // Ganti dengan kunci rahasia Anda
+  resave: false,
+  saveUninitialized: true,
+}));
+
+// Middleware flash
+app.use(flash());
+
+// Middleware untuk menyimpan pesan flash di dalam locals
+app.use((req, res, next) => {
+  res.locals.loginMessage = req.flash('loginMessage');
+  next();
+});
+
+app.use('/api/', indexRouter);
 app.use('/api/pegawai', usersRouter);
 
 // catch 404 and forward to error handler
