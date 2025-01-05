@@ -108,6 +108,39 @@ router.put('/:id', (req, res) => {
   });
 });
 
+// DELETE
+router.delete('/delete/:id', (req, res) => {
+  let id = req.params.id;
+
+  // Mengecek apakah id_pegawai ada dalam tabel jakita_pegawai
+  let sql = `SELECT id_pegawai FROM jakita_pegawai WHERE id_pegawai = ${id}`;
+  pool.query(sql, (err, result) => {
+      if (result.rowCount === 0) {
+          res.json({
+              success: false,
+              message: `Deleted failed: id_pegawai ${id} not found`,
+              data: null
+          });
+      } else {
+          // Jika ada, hapus data pegawai dari tabel jakita_pegawai
+          let sql2 = `DELETE FROM jakita_pegawai WHERE id_pegawai = ${id}`;
+          pool.query(sql2, (err) => {
+              if (err) {
+                  res.json({
+                      success: false,
+                      message: "Error deleting data",
+                      error: err
+                  });
+              } else {
+                  res.json({
+                      success: true,
+                      message: "Data Deleted",
+                  });
+              }
+          });
+      }
+  });
+});
 
 
 
