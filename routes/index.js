@@ -2,6 +2,9 @@ var express = require("express");
 var router = express.Router();
 
 module.exports = function (pool) {
+
+  // LOGIN
+  
   router.post('/', function(req, res) {
     let email = req.body.email;
     let pass = req.body.password;
@@ -31,11 +34,11 @@ module.exports = function (pool) {
           message: "Login gagal!"
         };
         console.log(JSON.stringify(response, null, 2));
-        // Tetap di halaman login
-        // res.redirect('/');  // Untuk pengujian lebih lanjut, gunakan redirect ini
       }
     });
   });
+
+  // LOGOUT
   
   router.get('/logout', function(req, res) {
     req.session.destroy(function(err) {
@@ -44,7 +47,6 @@ module.exports = function (pool) {
         message: "TERIMA KASIH! Anda telah berhasil logout."
       };
       console.log(JSON.stringify(response, null, 2));
-      // res.redirect('/');
     });
   });
   

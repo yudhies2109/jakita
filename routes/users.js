@@ -32,16 +32,12 @@ module.exports = function (pool) {
     };
 
     console.log("INI DATA YANG MASUK",data); 
-
-    // Pastikan data valid sebelum melakukan query
     if (!data.nama_pegawai || !data.no_telepon) {
       return res.json({
         success: false,
         message: "Nama pegawai dan nomor telepon harus diisi",
       });
     }
-
-    // Query untuk memasukkan data pegawai
     let sql = `INSERT INTO jakita_pegawai (id_pegawai, nama_pegwai, no_telepon) VALUES ('${data.id_pegawai}','${data.nama_pegawai}', '${data.no_telepon}') RETURNING *`;
     pool.query(sql, (err, insertPegawai) => {
       if (err) {
@@ -51,7 +47,6 @@ module.exports = function (pool) {
           error: err,
         });
       }
-      // Jika berhasil, kirimkan respon
       res.json({
         success: true,
         message: "Data pegawai berhasil ditambahkan",
@@ -71,13 +66,10 @@ router.put('/:id', (req, res) => {
     nama_pegawai: req.body.nama_pegawai,
     no_telepon: req.body.no_telepon,
   };
-
-  // SQL Query untuk update data pegawai
   let sql = `UPDATE jakita_pegawai SET nama_pegwai='${data.nama_pegawai}', no_telepon='${data.no_telepon}' WHERE id_pegawai = ${id} RETURNING *`;
 
   pool.query(sql, (err, updatePegawai) => {
     if (err) {
-      // Menangani error jika query gagal dijalankan
       console.error('Error executing query:', err);
       return res.status(500).json({
         success: false,
@@ -87,7 +79,6 @@ router.put('/:id', (req, res) => {
     }
 
     if (!updatePegawai || updatePegawai.rowCount === 0) {
-      // Cek jika tidak ada data yang diupdate
       return res.json({
         success: false,
         message: `Updating data failed. ID: ${id} not found.`,
@@ -95,7 +86,6 @@ router.put('/:id', (req, res) => {
       });
     }
 
-    // Jika data berhasil diupdate
     res.json({
       success: true,
       message: "Data has been updated.",
@@ -112,7 +102,6 @@ router.put('/:id', (req, res) => {
 router.delete('/delete/:id', (req, res) => {
   let id = req.params.id;
 
-  // Mengecek apakah id_pegawai ada dalam tabel jakita_pegawai
   let sql = `SELECT id_pegawai FROM jakita_pegawai WHERE id_pegawai = ${id}`;
   pool.query(sql, (err, result) => {
       if (result.rowCount === 0) {
@@ -122,7 +111,6 @@ router.delete('/delete/:id', (req, res) => {
               data: null
           });
       } else {
-          // Jika ada, hapus data pegawai dari tabel jakita_pegawai
           let sql2 = `DELETE FROM jakita_pegawai WHERE id_pegawai = ${id}`;
           pool.query(sql2, (err) => {
               if (err) {
